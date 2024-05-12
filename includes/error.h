@@ -12,6 +12,7 @@ enum STATE
     IS_A_DIRECTORY,
     FILE_DOESNT_EXIST,
     EMPTY_FILE, // not really an error[The compiler will just terminate any furthur steps]
+    EXPECT_PATH_GOT_NL,
 };
 
 #endif
