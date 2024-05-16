@@ -1,0 +1,6 @@
+func _func_a_(a: i8, b: u8): bool
+{
+    return true;
+}
+
+// functionality of common.th

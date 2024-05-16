@@ -8,4 +8,7 @@ typedef int bool_t;
 
 typedef int ret_t;
 
+#define FAILURE false 
+#define SUCCESS true
+
 #endif

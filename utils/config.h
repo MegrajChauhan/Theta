@@ -1,35 +1,35 @@
 #ifndef _CONFIG_
 
-#define _ZETA_OPTIMIZE_
+#define _THETA_OPTIMIZE_
 
 // Host Details
-#define _ZETA_LITTLE_ENDIAN_ 0x00
-#define _ZETA_BIG_ENDIAN_ 0x01
+#define _THETA_LITTLE_ENDIAN_ 0x00
+#define _THETA_BIG_ENDIAN_ 0x01
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define _ZETA_BYTE_ORDER_ _ZETA_LITTLE_ENDIAN_
+#define _THETA_BYTE_ORDER_ _THETA_LITTLE_ENDIAN_
 #else
-#define _ZETA_BYTE_ORDER_ _ZETA_BIG_ENDIAN_
+#define _THETA_BYTE_ORDER_ _THETA_BIG_ENDIAN_
 #endif
 
 #if defined(__amd64) || defined(__amd64__)
-#define _ZETA_HOST_CPU_AMD_ 1
+#define _THETA_HOST_CPU_AMD_ 1
 #endif
 
 #if defined(__x86_64)
-#define _ZETA_HOST_CPU_x86_64_ARCH_ 1
+#define _THETA_HOST_CPU_x86_64_ARCH_ 1
 #endif
 
 #if defined(__linux) || defined(__linux__) || defined(__gnu_linux__)
-#define _ZETA_HOST_OS_LINUX_ 1
+#define _THETA_HOST_OS_LINUX_ 1
 #endif
 
 #if defined(_WIN64)
-#define _ZETA_HOST_OS_WINDOWS_ 1
+#define _THETA_HOST_OS_WINDOWS_ 1
 #endif
 
 // Utilities
-#define _ZETA_TO_BOOL_(x) !!(x)
+#define _THETA_TO_BOOL_(x) !!(x)
 
 #ifndef surelyT
 
@@ -39,16 +39,16 @@
 #endif
 
 /*Based on optimizations, this may be set*/
-#if defined(_ZETA_OPTIMIZE_)
-#define _ZETA_ALWAYS_INLINE_ __attribute__((always_inline))
+#if defined(_THETA_OPTIMIZE_)
+#define _THETA_ALWAYS_INLINE_ __attribute__((always_inline))
 #else
-#define _ZETA_ALWAYS_INLINE_ static inline
+#define _THETA_ALWAYS_INLINE_ static inline
 #endif
 
-#define _ZETA_NO_DISCARD_ [[nodiscard]]
-#define _ZETA_NO_THROW_ __attribute__((no_throw))
-#define _ZETA_NO_RETURN_ __attribute__((no_return))
-#define _ZETA_NO_NULL_ __attribute__((nonnull))
+#define _THETA_NO_DISCARD_ [[nodiscard]]
+#define _THETA_NO_THROW_ __attribute__((no_throw))
+#define _THETA_NO_RETURN_ __attribute__((no_return))
+#define _THETA_NO_NULL_ __attribute__((nonnull))
 
 #if __SIZEOF_LONG__ == __SIZEOF_LONG_LONG__
 #define LONG long
