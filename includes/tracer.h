@@ -15,9 +15,9 @@ typedef struct tracer_stack tracer_stack;
 
 struct tracer_stack
 {
-    void **nodes;
-    size_t stack_size;
-    size_t stack_top;
+  void **nodes;
+  size_t stack_size;
+  size_t stack_top;
 };
 
 #define is_stack_full(ptr) ptr->stack_top == ptr->stack_size
@@ -30,5 +30,7 @@ void destroy_tracer_stack(tracer_stack *);
 void *pop_tracer_node(tracer_stack *);
 
 ret_t push_tracer_node(tracer_stack *, void *);
+
+void free_remaining_tracer_nodes(tracer_stack *);
 
 #endif

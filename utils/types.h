@@ -10,5 +10,6 @@ typedef int ret_t;
 
 #define FAILURE false 
 #define SUCCESS true
+#define AMBI 2 
 
 #endif

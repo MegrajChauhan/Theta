@@ -54,3 +54,13 @@ ret_t push_tracer_node(tracer_stack *st, void *data)
     st->stack_top++;
     return SUCCESS;
 }
+
+void free_remaining_tracer_nodes(tracer_stack *st)
+{
+    if (is_stack_empty(st))
+        return;
+    for (size_t i = 0; i < st->stack_top; i++)
+    {
+        free(st->nodes[i]); // since the nodes are of void* type, whatever type they were and whatever data they were holding, don't give a damn here
+    }
+}

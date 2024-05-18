@@ -1,7 +1,2 @@
 import math.th
 import common.th 
-
-func main(): void
-{
-    return;
-}
