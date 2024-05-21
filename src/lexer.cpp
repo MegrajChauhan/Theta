@@ -28,12 +28,13 @@ bool theta::lexer::Lexer::read_file()
     // the file opening shouldn't fail
     if (!f.is_open())
         return false; // this shouldn't happen
-    while (!f.eof())
-    {
-        std::string line;
-        std::getline(f, line);
-        file_contents.append(line);
-    }
+    f.seekg(f.beg, f.end);
+    size_t len = f.tellg();
+    char fconts[len];
+    f.seekg(f.beg);
+    f.read(fconts, len);
+    file_contents = fconts;
+    file_contents += '\0';
     f.close();
     return true;
 }
@@ -62,20 +63,22 @@ bool theta::lexer::Lexer::init_lexer()
     }
     // initialize other members
     curr_char = file_contents.begin();
+    end = file_contents.end();
     error::register_new_file(path);
+    ind = error::get_count();
     return true;
 }
 
 void theta::lexer::Lexer::handle_imports()
 {
-    while (curr_char != file_contents.end() && *curr_char != '\n' && (*curr_char == ' ' || *curr_char == '\t'))
+    while (curr_char != end && *curr_char != '\n' && (*curr_char == ' ' || *curr_char == '\t'))
     {
         curr_char++;
         col++;
     }
-    if (*curr_char == '\n' || curr_char == file_contents.end())
+    if (*curr_char == '\n' || curr_char == end)
     {
-        error::register_new_error("Expected a path to import not this.", tokens::token_loc(line, col - 1, col, error::count), error::_IMPORT_PATH_NOT_SPECIFIED);
+        error::register_new_error("Expected a path to import not this.", tokens::token_loc(line, col - 1, col, ind), error::_IMPORT_PATH_NOT_SPECIFIED);
         return;
     }
     size_t st = col;
@@ -84,14 +87,17 @@ void theta::lexer::Lexer::handle_imports()
     Lexer _l(p);
     if (!_l.lex_all())
     {
-        
+        error::register_new_error(_l.interpret_the_state(), tokens::token_loc(line, st, col, ind), error::_IMPORT_PATH_INVALID);
+        return;
     }
+    // just append the tokens
+    toks.insert(toks.begin(), _l.toks.begin(), _l.toks.end());
 }
 
 std::string theta::lexer::Lexer::get_import_path()
 {
     std::string p;
-    while (curr_char != file_contents.end() && *curr_char != ' ' && *curr_char != '\t')
+    while (curr_char != end && *curr_char != ' ' && *curr_char != '\t' && *curr_char != '\n')
     {
         p += *curr_char;
         curr_char++;
@@ -107,13 +113,13 @@ bool theta::lexer::Lexer::lex_all()
     if (!init_lexer())
         return false;
     // we lex everything at once
-    while (curr_char != file_contents.end())
+    while (curr_char != end)
     {
         switch (*curr_char)
         {
         case ' ':
         case '\t':
-            while ((*curr_char == ' ' || *curr_char == '\t') && curr_char != file_contents.end())
+            while ((*curr_char == ' ' || *curr_char == '\t') && curr_char != end)
             {
                 col++;
                 curr_char++;
@@ -131,27 +137,35 @@ bool theta::lexer::Lexer::lex_all()
                 if (s == HANDLE_IMPORT)
                 {
                     // gotta handle it
+                    handle_imports(); // don't care about errors here
+                    s = NORMAL;       // return to NORMAL state
                 }
+            }
+            else
+            {
+                curr_char++;
+                col++;
             }
         }
     }
+    return true; // even if errors were encountered while lexing the file
 }
 
 std::string theta::lexer::Lexer::get_current_character_group()
 {
     // This will basically gather the entire chunk inbetween spaces, newlines or tabs
     std::string sym;
-    while (curr_char != file_contents.end() && *curr_char != ' ' && *curr_char != '\t' && *curr_char != '\n' && (ISALPHA(curr_char) || *curr_char == '_' || ISNUM(curr_char)))
+    while (curr_char != end && *curr_char != ' ' && *curr_char != '\t' && *curr_char != '\n' && (ISALPHA(curr_char) || *curr_char == '_' || ISNUM(curr_char)))
     {
         sym += *curr_char;
         col++;
+        curr_char++;
     }
     return sym;
 }
 
 void theta::lexer::Lexer::get_current_character_group_token()
 {
-    // This will basically gather the entire chunk inbetween spaces, newlines or tabs
     size_t curr = col;
     std::string sym = get_current_character_group();
     if (sym == "import")
@@ -172,14 +186,14 @@ void theta::lexer::Lexer::add_token(size_t col_st, std::string val, tokens::toke
     tokens::token t;
     t.loc.end_col = col;
     t.loc.start_col = col_st;
-    t.loc.file_index = error::count;
+    t.loc.file_index = ind;
     t.loc.line = line;
     t.tok_val = val;
     t.type = type;
     toks.push_back(t);
 }
 
-void theta::lexer::Lexer::interpret_the_state()
+std::string theta::lexer::Lexer::interpret_the_state()
 {
     // This will register errors based on the state
     // Not for all the states
@@ -187,13 +201,10 @@ void theta::lexer::Lexer::interpret_the_state()
     switch (s)
     {
     case FILE_NOT_AVAI:
-        error::register_new_error("The given file " + path_in_str + " is not available.", tokens::token_loc(), error::_FILE_NOT_AVAI);
-        break;
+        return "The given file " + path_in_str + " is not available.";
     case FILE_A_DIR:
-        error::register_new_error("The given file " + path_in_str + " is not file but a directory.", tokens::token_loc(), error::_FILE_A_DIR);
-        break;
+        return "The given file " + path_in_str + " is not file but a directory.";
     case FILE_INVALID:
-        error::register_new_error("The given file " + path_in_str + " is not valid.", tokens::token_loc(), error::_FILE_INVALID);
-        break;
+        return "The given file " + path_in_str + " is not valid.";
     }
 }

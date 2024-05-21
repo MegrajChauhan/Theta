@@ -7,7 +7,7 @@
 #include "error.hpp"
 #include "tokens.hpp"
 
-#define ISALPHA(x) (*x >= 'a' && *x == 'z') || (*x >= 'A' && *x <= 'Z')
+#define ISALPHA(x) (*x >= 'a' && *x <= 'z') || (*x >= 'A' && *x <= 'Z')
 #define ISNUM(x) (*x >= '0' && *x <= '9')
 
 // Not having those data structures and standard library like C++s' made me wanna switch to C++ for this project for finishing it quickly
@@ -32,10 +32,11 @@ namespace theta
         {
             std::vector<tokens::token> toks;
             std::string file_contents;
-            std::string::iterator curr_char;
+            std::string::iterator curr_char, end;
             std::string file;
             std::filesystem::path path;
             std::string path_in_str;
+            size_t ind = 0;
             size_t line = 0, col = 0;
             state s = NORMAL;
 
@@ -64,7 +65,9 @@ namespace theta
 
             void add_token(size_t, std::string, tokens::token_t);
 
-            void interpret_the_state();
+            std::string interpret_the_state();
+
+            auto get_tokens() { return toks; }
         };
     };
 };

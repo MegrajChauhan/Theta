@@ -15,6 +15,7 @@ namespace theta
             _FILE_A_DIR,
             _FILE_NOT_AVAI,
             _IMPORT_PATH_NOT_SPECIFIED,
+            _IMPORT_PATH_INVALID,
         };
 
         struct Error
@@ -33,6 +34,10 @@ namespace theta
         void register_new_error(std::string, tokens::token_loc, error_t);
 
         bool is_file_already_registered(std::string);
+
+        std::vector<Error> get_errors();
+        std::vector<std::string> get_files();
+        size_t get_count();
 
     };
 };

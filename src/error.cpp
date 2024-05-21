@@ -19,3 +19,18 @@ bool theta::error::is_file_already_registered(std::string file)
 {
     return (std::find(files.begin(), files.end(), file) != files.end());
 }
+
+std::vector<std::string> theta::error::get_files()
+{
+    return error::files;
+}
+
+std::vector<theta::error::Error> theta::error::get_errors()
+{
+    return error::errors;
+}
+
+size_t theta::error::get_count()
+{
+    return error::count;
+}
