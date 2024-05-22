@@ -78,7 +78,7 @@ void theta::lexer::Lexer::handle_imports()
     }
     if (*curr_char == '\n' || curr_char == end)
     {
-        error::register_new_error("Expected a path to import not this.", tokens::token_loc(line, col - 1, col, ind), error::_IMPORT_PATH_NOT_SPECIFIED);
+        error::register_new_error("Expected a path to import not this.", get_current_line(), tokens::token_loc(line, col - 1, col, ind), error::_IMPORT_PATH_NOT_SPECIFIED);
         return;
     }
     size_t st = col;
@@ -87,11 +87,12 @@ void theta::lexer::Lexer::handle_imports()
     Lexer _l(p);
     if (!_l.lex_all())
     {
-        error::register_new_error(_l.interpret_the_state(), tokens::token_loc(line, st, col, ind), error::_IMPORT_PATH_INVALID);
+        error::register_new_error(_l.interpret_the_state(), get_current_line(), tokens::token_loc(line, st, col, ind), error::_IMPORT_PATH_INVALID);
         return;
     }
     // just append the tokens
     toks.insert(toks.begin(), _l.toks.begin(), _l.toks.end());
+    error::add_to_tree(ind); // update the tree
 }
 
 std::string theta::lexer::Lexer::get_import_path()
@@ -104,6 +105,21 @@ std::string theta::lexer::Lexer::get_import_path()
         col++;
     }
     return p;
+}
+
+std::string theta::lexer::Lexer::get_current_line()
+{
+    std::string l;
+    auto tmp = curr_char;
+    size_t len = col;
+    while (tmp != end && *tmp != '\n')
+    {
+        len++;
+        tmp++;
+    }
+    // we have our len
+    l.assign(tmp - len, tmp);
+    return l;
 }
 
 bool theta::lexer::Lexer::lex_all()

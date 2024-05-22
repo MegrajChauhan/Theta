@@ -68,6 +68,8 @@ namespace theta
             std::string interpret_the_state();
 
             auto get_tokens() { return toks; }
+
+            std::string get_current_line();
         };
     };
 };
