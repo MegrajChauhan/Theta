@@ -64,7 +64,7 @@ bool theta::lexer::Lexer::init_lexer()
     // initialize other members
     curr_char = file_contents.begin();
     end = file_contents.end();
-    error::register_new_file(path);
+    error::register_new_file(path_in_str);
     ind = error::get_count();
     return true;
 }
@@ -85,6 +85,10 @@ void theta::lexer::Lexer::handle_imports()
     std::string p = get_import_path();
     // first confirm the path and make sure it exists
     Lexer _l(p);
+    if (error::is_file_already_registered(_l.path_in_str))
+    {
+        return;
+    }
     if (!_l.lex_all())
     {
         error::register_new_error(_l.interpret_the_state(), get_current_line(), tokens::token_loc(line, st, col, ind), error::_IMPORT_PATH_INVALID);
@@ -92,7 +96,7 @@ void theta::lexer::Lexer::handle_imports()
     }
     // just append the tokens
     toks.insert(toks.begin(), _l.toks.begin(), _l.toks.end());
-    error::add_to_tree(ind); // update the tree
+    error::add_to_tree(ind, _l.ind); // update the tree
 }
 
 std::string theta::lexer::Lexer::get_import_path()

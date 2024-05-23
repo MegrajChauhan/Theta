@@ -41,11 +41,12 @@ namespace theta
 
         bool is_file_already_registered(std::string);
 
-        void add_to_tree(size_t);
+        void add_to_tree(size_t, size_t);
 
         std::vector<Error> get_errors();
         std::vector<std::string> get_files();
         size_t get_count();
+        std::unordered_map<size_t, size_t> get_inc_tree();
 
         // after every step, this function is called
         // if any fatal error is encountered, the compilation will not move to the next step
@@ -57,6 +58,7 @@ namespace theta
         // what this does is basically read the given line from the file
         std::string get_line_from_file(size_t ind, size_t line);
 
+        void print_error(size_t line, size_t colst, size_t colend, std::string file, std::string errmsg, std::stack<size_t> filetree, std::string errline);
     };
 };
 
